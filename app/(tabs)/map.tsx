@@ -41,6 +41,7 @@ export default function MapScreen() {
 
       let userLocation = await Location.getCurrentPositionAsync({});
       setCoords(userLocation.coords);
+      console.log("Got coords!")
 
       const user_data = sessionStorage.getItem("spotify_user_id");
       if (user_data) {
@@ -65,6 +66,7 @@ export default function MapScreen() {
     text = errorMsg;
   } else if (coords) {
     text = `Lat: ${coords.latitude}, Lon: ${coords.longitude}`;
+    console.log("Got coords")
   }
 
   function isNameResponse(data: unknown): data is NameResponse {
@@ -90,9 +92,9 @@ export default function MapScreen() {
     try {
       const response = await fetch(url);
       const data = await response.json();
-      if (isNameResponse(data) && data.address.city) {
+      if (isNameResponse(data) && (data.address.city || data.address.town)) {
         // console.log(data.display_name);
-        setLocName(data.address.city)
+        setLocName(data.address.city ?? data.address.town ?? data.address.country ?? "Unknown")
         return data.display_name || 'Location name not found';
       } else {
         throw new Error('Invalid API response');
